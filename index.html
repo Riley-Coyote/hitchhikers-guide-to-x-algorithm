@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X Algorithm Suite | Post Analyzer & Strategy Tool</title>
+    <style>
+        /* =====================================================
+           COYOTE DESIGN SYSTEM - X ALGORITHM SUITE
+           A unified visual language for serious, focused work
+           ===================================================== */
+
+        :root {
+            /* Dark Mode Backgrounds - Pure Black Foundation */
+            --bg-void: #000000;
+            --bg-deep: #050505;
+            --bg-surface: #0a0a0a;
+            --bg-elevated: #111111;
+            --bg-raised: #161616;
+
+            /* Borders - Subtle Definition */
+            --border-subtle: #1a1a1a;
+            --border-medium: #252525;
+            --border-strong: #333333;
+
+            /* Text Hierarchy */
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-tertiary: #787878;
+            --text-dim: #505050;
+            --text-ghost: #303030;
+
+            /* Accents - Used Sparingly, Only for Meaning */
+            --accent-primary: #3D5A80;        /* Rich Blue - primary actions */
+            --accent-primary-light: #6B8CAE;
+            --accent-primary-dark: #2C4260;
+            --accent-success: #5C7A5E;        /* Sage - success states */
+            --accent-success-light: #7A9B7C;
+            --accent-warning: #B8860B;        /* Warm Amber - warnings */
+            --accent-warning-light: #D4A442;
+            --accent-error: #9A4A4A;          /* Muted Red - errors */
+            --accent-error-light: #B86666;
+
+            /* Typography - SF Pro + Mono */
+            --font-system: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+            /* Spacing - 4px Base Unit, Generous Whitespace */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-10: 40px;
+            --space-12: 48px;
+            --space-16: 64px;
+
+            /* No rounded corners - sharp edges only */
+            --radius: 0;
+
+            /* Transitions - Subtle */
+            --transition-fast: 0.1s ease;
+            --transition-normal: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-system);
+            font-weight: 300;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            overflow-x: hidden;
+            letter-spacing: 0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Subtle background - no animated grid, just pure dark */
+        .bg-grid {
+            display: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-16) var(--space-8);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* =====================================================
+           HEADER - Coyote Style
+           ===================================================== */
+
+        header {
+            text-align: center;
+            padding: var(--space-16) 0;
+            margin-bottom: var(--space-12);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo {
+            font-family: var(--font-system);
+            font-size: 1.5rem;
+            font-weight: 200;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .subtitle {
+            font-family: var(--font-mono);
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        /* =====================================================
+           PANEL COMPONENT - No Glass, Subtle Borders
+           ===================================================== */
+
+        .glass-panel {
+            position: relative;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            padding: var(--space-8);
+            margin-bottom: var(--space-6);
+        }
+
+        /* Remove corner brackets - keep it minimal */
+        .glass-panel::before,
+        .glass-panel::after {
+            display: none;
+        }
+
+        /* =====================================================
+           NAVIGATION TABS - Coyote Style
+           ===================================================== */
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-1);
+            margin-bottom: var(--space-12);
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: var(--space-6);
+        }
+
+        .nav-tab {
+            padding: var(--space-3) var(--space-5);
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .nav-tab:hover {
+            border-color: var(--border-medium);
+            color: var(--text-secondary);
+        }
+
+        .nav-tab.active {
+            background: var(--bg-elevated);
+            border-color: var(--border-medium);
+            color: var(--text-primary);
+        }
+
+        /* =====================================================
+           PANELS
+           ===================================================== */
+
+        .panel {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* =====================================================
+           CARD HEADERS - Coyote Style Labels
+           ===================================================== */
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-family: var(--font-system);
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .card-subtitle {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+            letter-spacing: 0.02em;
+        }
+
+        /* =====================================================
+           GRID LAYOUTS - Generous Spacing
+           ===================================================== */
+
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
+
+        @media (max-width: 1024px) {
+            .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .container { padding: var(--space-6) var(--space-4); }
+            .logo { font-size: 1.25rem; }
+        }
+
+        /* =====================================================
+           POST ANALYZER - SCORE GAUGE
+           ===================================================== */
+
+        .score-gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--space-12);
+            background: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: var(--space-8);
+        }
+
+        .score-gauge {
+            position: relative;
+            width: 200px;
+            height: 100px;
+            overflow: hidden;
+        }
+
+        .score-gauge-bg {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 0;
+            background: conic-gradient(
+                from 180deg,
+                var(--accent-error) 0deg,
+                var(--accent-warning) 60deg,
+                var(--accent-success) 120deg,
+                var(--accent-success) 180deg
+            );
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+            opacity: 0.15;
+        }
+
+        .score-gauge-fill {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 0;
+            background: conic-gradient(
+                from 180deg,
+                var(--accent-error) 0deg,
+                var(--accent-warning) 60deg,
+                var(--accent-success) 120deg,
+                transparent 180deg
+            );
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+            transform-origin: center center;
+            transition: transform 0.5s ease;
+        }
+
+        .score-gauge-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: var(--bg-deep);
+            border-radius: 0;
+        }
+
+        .score-value-display {
+            text-align: center;
+            margin-top: var(--space-5);
+        }
+
+        .score-number {
+            font-family: var(--font-mono);
+            font-size: 3.5rem;
+            font-weight: 200;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .score-label {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-top: var(--space-2);
+        }
+
+        .score-grade {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: var(--space-2) var(--space-4);
+            margin-top: var(--space-3);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+        .grade-excellent { background: var(--bg-elevated); color: var(--accent-success-light); border: 1px solid var(--accent-success); }
+        .grade-good { background: var(--bg-elevated); color: var(--accent-primary-light); border: 1px solid var(--accent-primary); }
+        .grade-moderate { background: var(--bg-elevated); color: var(--accent-warning-light); border: 1px solid var(--accent-warning); }
+        .grade-poor { background: var(--bg-elevated); color: var(--accent-error-light); border: 1px solid var(--accent-error); }
+
+        /* =====================================================
+           POST ANALYZER - INPUT
+           ===================================================== */
+
+        .analyzer-input-container {
+            position: relative;
+        }
+
+        .analyzer-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: var(--space-5);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            font-family: var(--font-system);
+            font-size: 0.9rem;
+            font-weight: 300;
+            line-height: 1.7;
+            resize: vertical;
+            transition: border-color var(--transition-normal);
+        }
+
+        .analyzer-textarea:focus {
+            outline: none;
+            border-color: var(--border-medium);
+        }
+
+        .analyzer-textarea::placeholder {
+            color: var(--text-ghost);
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: var(--space-3);
+            right: var(--space-4);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .char-counter.warning { color: var(--accent-warning); }
+        .char-counter.danger { color: var(--accent-error); }
+
+        .analyze-btn {
+            width: 100%;
+            padding: var(--space-4);
+            margin-top: var(--space-4);
+            background: transparent;
+            border: 1px solid var(--border-medium);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+
+        .analyze-btn:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-strong);
+            color: var(--text-primary);
+        }
+
+        /* =====================================================
+           SIGNAL CARDS
+           ===================================================== */
+
+        .signal-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            padding: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            transition: all var(--transition-normal);
+        }
+
+        .signal-card:hover {
+            background: var(--bg-raised);
+            border-color: var(--border-medium);
+        }
+
+        .signal-card.positive {
+            border-left: 2px solid var(--accent-success);
+        }
+
+        .signal-card.negative {
+            border-left: 2px solid var(--accent-error);
+        }
+
+        .signal-card.neutral {
+            border-left: 2px solid var(--accent-primary);
+        }
+
+        .signal-icon-sm {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .signal-icon-sm.positive { border-color: var(--accent-success); }
+        .signal-icon-sm.negative { border-color: var(--accent-error); }
+        .signal-icon-sm.neutral { border-color: var(--accent-primary); }
+
+        .signal-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .signal-name {
+            font-weight: 400;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .signal-desc {
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .signal-weight {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 400;
+            flex-shrink: 0;
+        }
+
+        .signal-weight.positive { color: var(--accent-success-light); }
+        .signal-weight.negative { color: var(--accent-error-light); }
+
+        /* =====================================================
+           QUICK REFERENCE CARDS
+           ===================================================== */
+
+        .ref-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            padding: var(--space-6);
+        }
+
+        .ref-card-header {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .ref-list {
+            list-style: none;
+        }
+
+        .ref-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-3);
+            line-height: 1.5;
+        }
+
+        .ref-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .ref-list .icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+            font-size: 0.75rem;
+        }
+
+        .ref-list.do li .icon { color: var(--accent-success); }
+        .ref-list.dont li .icon { color: var(--accent-error); }
+
+        .highlight-box {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-medium);
+            padding: var(--space-6);
+            text-align: center;
+        }
+
+        .highlight-title {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: var(--space-3);
+        }
+
+        .highlight-text {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--text-primary);
+        }
+
+        .key-numbers {
+            display: flex;
+            justify-content: space-around;
+            margin-top: var(--space-6);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .key-number {
+            text-align: center;
+        }
+
+        .key-number-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 200;
+            color: var(--text-primary);
+        }
+
+        .key-number-label {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 4px;
+        }
+
+        /* =====================================================
+           STRATEGY CARDS
+           ===================================================== */
+
+        .strategy-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            padding: var(--space-5) var(--space-6);
+            transition: all var(--transition-normal);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto auto auto;
+            gap: var(--space-2) var(--space-4);
+        }
+
+        .strategy-card:hover {
+            border-color: var(--border-medium);
+        }
+
+        .strategy-number {
+            width: 28px;
+            height: 28px;
+            background: transparent;
+            border: 1px solid var(--border-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-weight: 400;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            grid-row: 1 / 3;
+        }
+
+        .strategy-header {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .strategy-title {
+            font-weight: 400;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .strategy-why {
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .strategy-content {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: var(--space-6);
+            align-items: flex-start;
+            padding-top: var(--space-3);
+            border-top: 1px solid var(--border-subtle);
+            margin-top: var(--space-2);
+        }
+
+        .strategy-lists {
+            display: flex;
+            gap: var(--space-8);
+            flex: 1;
+            font-size: 0.8rem;
+        }
+
+        .strategy-do, .strategy-dont {
+            list-style: none;
+            flex: 1;
+        }
+
+        .strategy-list-header {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-2);
+            color: var(--text-dim);
+        }
+
+        .strategy-do li, .strategy-dont li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+            color: var(--text-secondary);
+            font-weight: 300;
+            line-height: 1.4;
+        }
+
+        .strategy-do li::before {
+            content: '✓';
+            color: var(--accent-success);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .strategy-dont li::before {
+            content: '✕';
+            color: var(--accent-error);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .pro-tip {
+            background: var(--bg-deep);
+            border-left: 2px solid var(--accent-warning);
+            padding: var(--space-3) var(--space-4);
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            max-width: 200px;
+            flex-shrink: 0;
+        }
+
+        .pro-tip::before {
+            content: 'TIP ';
+            color: var(--accent-warning);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* =====================================================
+           WEIGHT BARS
+           ===================================================== */
+
+        .weight-bar-container {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .weight-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--bg-raised);
+            overflow: hidden;
+        }
+
+        .weight-bar-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .weight-bar-fill.positive {
+            background: var(--accent-success);
+        }
+
+        .weight-bar-fill.negative {
+            background: var(--accent-error);
+        }
+
+        /* =====================================================
+           TOOLTIPS
+           ===================================================== */
+
+        [data-tooltip] {
+            position: relative;
+            cursor: help;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-raised);
+            border: 1px solid var(--border-medium);
+            padding: var(--space-2) var(--space-4);
+            font-size: 0.7rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-fast);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* =====================================================
+           CODE BLOCKS
+           ===================================================== */
+
+        .code-block {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            padding: var(--space-6);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 400;
+            line-height: 1.9;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: var(--accent-primary-light);
+        }
+
+        .code-comment {
+            color: var(--text-dim);
+        }
+
+        .code-keyword {
+            color: var(--text-secondary);
+        }
+
+        .code-positive {
+            color: var(--accent-success-light);
+        }
+
+        .code-negative {
+            color: var(--accent-error-light);
+        }
+
+        /* =====================================================
+           DECAY CHART
+           ===================================================== */
+
+        .decay-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--space-2);
+            height: 120px;
+            padding: var(--space-4) 0;
+        }
+
+        .decay-bar {
+            flex: 1;
+            background: var(--accent-primary);
+            position: relative;
+            transition: height 0.3s ease;
+            min-height: 10px;
+        }
+
+        .decay-bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--text-dim);
+        }
+
+        .decay-labels {
+            display: flex;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+        }
+
+        .decay-labels span {
+            flex: 1;
+            text-align: center;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* =====================================================
+           TAGS
+           ===================================================== */
+
+        .tag {
+            display: inline-block;
+            padding: var(--space-1) var(--space-3);
+            background: var(--bg-raised);
+            border: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-right: var(--space-2);
+            margin-top: var(--space-2);
+        }
+
+        .tag.boost { border-color: var(--accent-success); color: var(--accent-success-light); }
+        .tag.penalty { border-color: var(--accent-error); color: var(--accent-error-light); }
+        .tag.info { border-color: var(--accent-primary); color: var(--accent-primary-light); }
+
+        /* =====================================================
+           RECOMMENDATIONS
+           ===================================================== */
+
+        .recommendation {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            margin-bottom: var(--space-3);
+        }
+
+        .recommendation-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .recommendation-icon.tip { border-color: var(--accent-primary); }
+        .recommendation-icon.warning { border-color: var(--accent-warning); }
+        .recommendation-icon.success { border-color: var(--accent-success); }
+
+        .recommendation-text {
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* =====================================================
+           PIPELINE DIAGRAM
+           ===================================================== */
+
+        .pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .pipeline-number {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-weight: 400;
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            flex-shrink: 0;
+        }
+
+        .pipeline-content {
+            flex: 1;
+        }
+
+        .pipeline-title {
+            font-weight: 400;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+
+        .pipeline-desc {
+            font-size: 0.7rem;
+            font-weight: 300;
+            color: var(--text-tertiary);
+        }
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        footer {
+            text-align: center;
+            padding: var(--space-12) 0;
+            margin-top: var(--space-10);
+            border-top: 1px solid var(--border-subtle);
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        footer a {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        footer a:hover {
+            color: var(--text-secondary);
+        }
+
+        /* =====================================================
+           CUSTOM SCROLLBAR
+           ===================================================== */
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-medium);
+        }
+
+        /* =====================================================
+           WARNINGS & ALERTS
+           ===================================================== */
+
+        .warning-card {
+            padding: var(--space-4);
+            background: var(--bg-deep);
+            border-left: 1px solid var(--accent-error);
+        }
+
+        .warning-title {
+            font-weight: 500;
+            font-size: 0.7rem;
+            color: var(--accent-error-light);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: var(--space-2);
+        }
+
+        .warning-text {
+            font-size: 0.8rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+        }
+
+        /* =====================================================
+           EMPTY STATES
+           ===================================================== */
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-12);
+            color: var(--text-dim);
+        }
+
+        .empty-state-icon {
+            font-size: 2rem;
+            margin-bottom: var(--space-4);
+            opacity: 0.3;
+        }
+
+        .empty-state-text {
+            font-size: 0.8rem;
+            font-weight: 300;
+        }
+
+        /* =====================================================
+           RESULTS GRID FOR ANALYZER
+           ===================================================== */
+
+        .results-section {
+            margin-top: var(--space-8);
+        }
+
+        .results-section h3 {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .detected-signals {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-3);
+        }
+
+        .detected-signal {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            font-size: 0.75rem;
+            font-weight: 300;
+        }
+
+        .detected-signal.positive { border-left: 2px solid var(--accent-success); }
+        .detected-signal.negative { border-left: 2px solid var(--accent-error); }
+        .detected-signal.neutral { border-left: 2px solid var(--accent-primary); }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">X Algorithm Suite</div>
+            <p class="subtitle">Post Analyzer • Signal Weights • Strategy Guide</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-panel="analyzer">Post Analyzer</button>
+            <button class="nav-tab" data-panel="reference">Quick Reference</button>
+            <button class="nav-tab" data-panel="signals">Signal Weights</button>
+            <button class="nav-tab" data-panel="strategy">Strategy Guide</button>
+            <button class="nav-tab" data-panel="deep-dive">Deep Dive</button>
+        </nav>
+
+        <!-- =====================================================
+             POST ANALYZER PANEL
+             ===================================================== -->
+        <div id="analyzer" class="panel active">
+            <div class="grid-2">
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--border-subtle);">
+                            <span style="color: var(--text-tertiary);">📝</span>
+                        </div>
+                        <div>
+                            <div class="card-title">Paste Your Post</div>
+                            <div class="card-subtitle">Enter tweet text for analysis</div>
+                        </div>
+                    </div>
+
+                    <div class="analyzer-input-container">
+                        <textarea
+                            id="postText"
+                            class="analyzer-textarea"
+                            placeholder="Paste your tweet or post content here...
+
+Example: Just launched my new project! Check out the link in my bio for more details. What do you think? #buildinpublic"
+                            maxlength="4000"
+                        ></textarea>
+                        <div class="char-counter" id="charCounter">0 / 280</div>
+                    </div>
+
+                    <button class="analyze-btn" id="analyzeBtn">ANALYZE POST</button>
+
+                    <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--bg-deep); border: 1px solid var(--border-subtle);">
+                        <div style="font-size: 0.7rem; font-weight: 300; color: var(--text-tertiary);">
+                            <strong style="color: var(--text-secondary); font-weight: 400;">Note:</strong> This analyzer examines text patterns.
+                            For best results, include your full post including hashtags, mentions, and any call-to-action text.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel">
+                    <div class="score-gauge-container" id="scoreContainer">
+                        <div class="score-value-display">
+                            <div class="score-number" id="scoreValue">--</div>
+                            <div class="score-label">Engagement Score</div>
+                            <div class="score-grade" id="scoreGrade" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <div id="analysisResults" class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <div class="empty-state-text">Enter a post to see your analysis</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="detailedResults" style="display: none;">
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--accent-success);">
+                            <span style="color: var(--accent-success-light);">✓</span>
+                        </div>
+                        <div>
+                            <div class="card-title">Detected Signals</div>
+                            <div class="card-subtitle">Patterns found in your post</div>
+                        </div>
+                    </div>
+                    <div id="detectedSignals" class="detected-signals"></div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="glass-panel" id="warningsPanel" style="display: none;">
+                        <div class="card-header">
+                            <div class="card-icon" style="border: 1px solid var(--accent-error);">
+                                <span style="color: var(--accent-error-light);">⚠</span>
+                            </div>
+                            <div>
+                                <div class="card-title">Warnings</div>
+                                <div class="card-subtitle">Issues that may hurt reach</div>
+                            </div>
+                        </div>
+                        <div id="warningsList"></div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="card-header">
+                            <div class="card-icon" style="border: 1px solid var(--accent-primary);">
+                                <span style="color: var(--accent-primary-light);">💡</span>
+                            </div>
+                            <div>
+                                <div class="card-title">Recommendations</div>
+                                <div class="card-subtitle">How to improve this post</div>
+                            </div>
+                        </div>
+                        <div id="recommendationsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             QUICK REFERENCE PANEL
+             ===================================================== -->
+        <div id="reference" class="panel">
+            <div class="glass-panel">
+                <div class="highlight-box">
+                    <div class="highlight-title">The One Thing</div>
+                    <div class="highlight-text">Likes = Primary Ranking Signal</div>
+                    <div style="font-size: 0.8rem; color: var(--text-tertiary); margin-top: var(--space-3);">
+                        Everything else is secondary. Optimize for likes first.
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="glass-panel">
+                    <div class="ref-card">
+                        <div class="ref-card-header">✅ DO</div>
+                        <ul class="ref-list do">
+                            <li><span class="icon">→</span> Post native video (gets special VQV boost)</li>
+                            <li><span class="icon">→</span> Space posts 4+ hours apart</li>
+                            <li><span class="icon">→</span> Create shareable content (DM shares = quality signal)</li>
+                            <li><span class="icon">→</span> Ask questions (increases replies)</li>
+                            <li><span class="icon">→</span> Build genuine followers (in-network advantage)</li>
+                            <li><span class="icon">→</span> Encourage profile clicks (author authority)</li>
+                            <li><span class="icon">→</span> Post within 48h relevance window</li>
+                            <li><span class="icon">→</span> Create dwell-worthy content</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="glass-panel">
+                    <div class="ref-card">
+                        <div class="ref-card-header">❌ DON'T</div>
+                        <ul class="ref-list dont">
+                            <li><span class="icon">→</span> Spam posts (severe diversity penalty)</li>
+                            <li><span class="icon">→</span> Use external links (prefer native content)</li>
+                            <li><span class="icon">→</span> Post clickbait (triggers "Not Interested")</li>
+                            <li><span class="icon">→</span> Be controversial for controversy's sake (block/mute risk)</li>
+                            <li><span class="icon">→</span> Repost excessively (deduplication filters)</li>
+                            <li><span class="icon">→</span> Use muted keywords (invisible to some)</li>
+                            <li><span class="icon">→</span> Post when your audience is offline</li>
+                            <li><span class="icon">→</span> Ignore negative feedback patterns</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="card-header">
+                    <div class="card-icon" style="border: 1px solid var(--border-medium);">
+                        <span style="color: var(--text-secondary);">#</span>
+                    </div>
+                    <div>
+                        <div class="card-title">Key Numbers</div>
+                        <div class="card-subtitle">Critical thresholds to remember</div>
+                    </div>
+                </div>
+
+                <div class="key-numbers">
+                    <div class="key-number">
+                        <div class="key-number-value">48h</div>
+                        <div class="key-number-label">Content Window</div>
+                    </div>
+                    <div class="key-number">
+                        <div class="key-number-value">128</div>
+                        <div class="key-number-label">History Actions</div>
+                    </div>
+                    <div class="key-number">
+                        <div class="key-number-value">45%</div>
+                        <div class="key-number-label">2nd Post Decay</div>
+                    </div>
+                    <div class="key-number">
+                        <div class="key-number-value">~30%</div>
+                        <div class="key-number-label">OON Penalty</div>
+                    </div>
+                    <div class="key-number">
+                        <div class="key-number-value">19</div>
+                        <div class="key-number-label">Predicted Actions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="card-header">
+                    <div class="card-icon" style="border: 1px solid var(--accent-warning);">
+                        <span style="color: var(--accent-warning-light);">⚡</span>
+                    </div>
+                    <div>
+                        <div class="card-title">Quick Wins</div>
+                        <div class="card-subtitle">Immediate impact actions</div>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0;">
+                        <div style="font-weight: 600; margin-bottom: var(--space-2); color: var(--accent-success-light);">🎬 Video First</div>
+                        <p style="font-size: 0.8rem; color: var(--text-tertiary);">Native video gets VQV_WEIGHT boost. Always prefer video over images or text-only.</p>
+                    </div>
+                    <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0;">
+                        <div style="font-weight: 600; margin-bottom: var(--space-2); color: var(--accent-primary-light);">❓ Ask Questions</div>
+                        <p style="font-size: 0.8rem; color: var(--text-tertiary);">Questions boost reply probability. Replies have HIGH weight in scoring.</p>
+                    </div>
+                    <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0;">
+                        <div style="font-weight: 600; margin-bottom: var(--space-2); color: var(--text-secondary);">⏰ Timing Matters</div>
+                        <p style="font-size: 0.8rem; color: var(--text-tertiary);">Space posts 4+ hours. First post of day gets 100% score, second only 45%.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SIGNAL WEIGHTS PANEL
+             ===================================================== -->
+        <div id="signals" class="panel">
+            <div class="grid-2">
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--accent-success);">
+                            <span style="color: var(--accent-success-light);">+</span>
+                        </div>
+                        <div>
+                            <div class="card-title">Positive Signals</div>
+                            <div class="card-subtitle">13 actions that boost content</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                        <div class="signal-card positive" data-tooltip="The PRIMARY ranking signal. Optimize for likes above all else.">
+                            <div class="signal-icon-sm positive">❤️</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Likes (Favorites)</div>
+                                <div class="signal-desc">PRIMARY ranking metric</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">1.0x</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="New followers from your content = ultimate quality signal">
+                            <div class="signal-icon-sm positive">➕</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Follow Author</div>
+                                <div class="signal-desc">Ultimate quality signal</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 95%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">VERY HIGH</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Native video gets special VQV_WEIGHT boost">
+                            <div class="signal-icon-sm positive">🎬</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Video Views (VQV)</div>
+                                <div class="signal-desc">Special boost for native video</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">HIGH</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Conversations drive engagement">
+                            <div class="signal-icon-sm positive">💬</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Replies</div>
+                                <div class="signal-desc">Drives conversation</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 80%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">HIGH</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Amplifies your reach to new audiences">
+                            <div class="signal-icon-sm positive">🔄</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Reposts</div>
+                                <div class="signal-desc">Amplification signal</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 75%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">HIGH</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Quote tweets add commentary, showing deeper engagement">
+                            <div class="signal-icon-sm positive">💭</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Quotes</div>
+                                <div class="signal-desc">Deep engagement</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">HIGH</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Private sharing = high-quality content indicator">
+                            <div class="signal-icon-sm positive">✉️</div>
+                            <div class="signal-content">
+                                <div class="signal-name">DM Shares</div>
+                                <div class="signal-desc">Private quality signal</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 55%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">MEDIUM</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Shows interest in you as an author">
+                            <div class="signal-icon-sm positive">👤</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Profile Clicks</div>
+                                <div class="signal-desc">Author interest</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">MEDIUM</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="External sharing via link copy">
+                            <div class="signal-icon-sm positive">🔗</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Link Copy Shares</div>
+                                <div class="signal-desc">External sharing</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">MEDIUM</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="General share button usage">
+                            <div class="signal-icon-sm positive">📤</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Shares (General)</div>
+                                <div class="signal-desc">Sharing intent</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">MEDIUM</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Time spent viewing content">
+                            <div class="signal-icon-sm positive">⏱️</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Dwell Time</div>
+                                <div class="signal-desc">Attention signal</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 35%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">MEDIUM</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="User expanded media for closer look">
+                            <div class="signal-icon-sm positive">🖼️</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Photo Expands</div>
+                                <div class="signal-desc">Media interest</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 25%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">LOW</span>
+                        </div>
+
+                        <div class="signal-card positive" data-tooltip="Clicks on content for more info">
+                            <div class="signal-icon-sm positive">👆</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Content Clicks</div>
+                                <div class="signal-desc">Engagement intent</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill positive" style="width: 20%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight positive">LOW</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--accent-error);">
+                            <span style="color: var(--accent-error-light);">-</span>
+                        </div>
+                        <div>
+                            <div class="card-title">Negative Signals</div>
+                            <div class="card-subtitle">4 actions that suppress content</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                        <div class="signal-card negative" data-tooltip="MOST damaging action. Even one can devastate reach.">
+                            <div class="signal-icon-sm negative">🚨</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Report</div>
+                                <div class="signal-desc">MOST damaging action</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill negative" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight negative">-SEVERE</span>
+                        </div>
+
+                        <div class="signal-card negative" data-tooltip="User blocked you - severe trust violation signal">
+                            <div class="signal-icon-sm negative">⛔</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Block Author</div>
+                                <div class="signal-desc">SEVERE penalty</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill negative" style="width: 85%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight negative">-HIGH</span>
+                        </div>
+
+                        <div class="signal-card negative" data-tooltip="User muted you - wants to avoid your content">
+                            <div class="signal-icon-sm negative">🔇</div>
+                            <div class="signal-content">
+                                <div class="signal-name">Mute Author</div>
+                                <div class="signal-desc">Quality rejection</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill negative" style="width: 75%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight negative">-HIGH</span>
+                        </div>
+
+                        <div class="signal-card negative" data-tooltip="User marked as not interested - relevance failure">
+                            <div class="signal-icon-sm negative">🚫</div>
+                            <div class="signal-content">
+                                <div class="signal-name">"Not Interested"</div>
+                                <div class="signal-desc">Relevance rejection</div>
+                            </div>
+                            <div class="weight-bar-container" style="width: 120px;">
+                                <div class="weight-bar">
+                                    <div class="weight-bar-fill negative" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                            <span class="signal-weight negative">-MEDIUM</span>
+                        </div>
+                    </div>
+
+                    <div class="warning-card" style="margin-top: var(--space-8);">
+                        <div class="warning-title">⚠️ Critical Insight</div>
+                        <div class="warning-text">
+                            One block, mute, or report can devastate your reach across the entire platform.
+                            The algorithm explicitly predicts these probabilities and applies NEGATIVE weights
+                            to content likely to trigger them.
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="margin-top: var(--space-8); background: var(--bg-elevated);">
+                        <div class="card-header" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                            <div class="card-icon" style="border: 1px solid var(--accent-primary);">
+                                <span style="color: var(--accent-primary-light);">📊</span>
+                            </div>
+                            <div>
+                                <div class="card-title">Signal Index Reference</div>
+                                <div class="card-subtitle">Technical mapping from the algorithm</div>
+                            </div>
+                        </div>
+                        <div class="code-block" style="margin-top: var(--space-4); font-size: 0.7rem;">
+                            <code class="code-positive">Index 0:  Favorite (Like)</code>     | <code>Index 7:  Share</code>          | <code class="code-negative">Index 14: Not Interested</code><br>
+                            <code class="code-positive">Index 1:  Reply</code>               | <code>Index 8:  DM Share</code>       | <code class="code-negative">Index 15: Block Author</code><br>
+                            <code class="code-positive">Index 2:  Repost</code>              | <code>Index 9:  Link Copy</code>      | <code class="code-negative">Index 16: Mute Author</code><br>
+                            <code>Index 3:  Photo Expand</code>        | <code>Index 10: Dwell (Short)</code>  | <code class="code-negative">Index 17: Report</code><br>
+                            <code>Index 4:  Content Click</code>       | <code class="code-positive">Index 11: Quote</code>         | <code>Index 18: Dwell (Long)</code><br>
+                            <code>Index 5:  Profile Click</code>       | <code class="code-comment">Index 12: (Reserved)</code>    |<br>
+                            <code class="code-positive">Index 6:  Video View (VQV)</code>    | <code class="code-positive">Index 13: Follow Author</code> |
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             STRATEGY GUIDE PANEL
+             ===================================================== -->
+        <div id="strategy" class="panel">
+            <div class="glass-panel" style="margin-bottom: var(--space-8);">
+                <div class="card-header">
+                    <div class="card-icon" style="border: 1px solid var(--accent-success);">
+                        <span style="color: var(--accent-success-light);">🎯</span>
+                    </div>
+                    <div>
+                        <div class="card-title">Maximize Reach</div>
+                        <div class="card-subtitle">8 actionable strategies based on the algorithm</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="strategy-card">
+                        <div class="strategy-number">1</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Optimize for Likes</div>
+                            <div class="strategy-why">Likes are the PRIMARY ranking signal. Every other metric is secondary.</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>Create likeable content</li>
+                                    <li>Study what gets liked</li>
+                                    <li>Use visual hooks</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Chase other metrics</li>
+                                    <li>Ignore like patterns</li>
+                                    <li>Post unlikeable takes</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">The first like often comes within 5 minutes. Hook early.</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-card">
+                        <div class="strategy-number">2</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Create Shareable Content</div>
+                            <div class="strategy-why">DM shares and link copies signal high-quality content worth spreading.</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>Make "send to friend" content</li>
+                                    <li>Create save-worthy info</li>
+                                    <li>Use clear takeaways</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Post forgettable content</li>
+                                    <li>Be too niche</li>
+                                    <li>Lack clear value</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">Ask yourself: "Would I send this to a friend?"</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-card">
+                        <div class="strategy-number">3</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Post Native Video</div>
+                            <div class="strategy-why">Videos get special VQV_WEIGHT boost. Native video always outperforms links.</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>Upload videos directly</li>
+                                    <li>Hook in first 3 seconds</li>
+                                    <li>Use captions</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Link to YouTube</li>
+                                    <li>Make boring intros</li>
+                                    <li>Post without context</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">15-60 second videos perform best for completion rate.</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-card">
+                        <div class="strategy-number">4</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Space Your Posts</div>
+                            <div class="strategy-why">Author diversity penalty: 2nd post = 45% score, 3rd = 32%, 4th = 20%...</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>Wait 4+ hours between</li>
+                                    <li>Quality over quantity</li>
+                                    <li>Plan posting schedule</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Spam multiple posts</li>
+                                    <li>Thread everything</li>
+                                    <li>Post on impulse</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">1-2 high-quality posts/day outperforms 10 mediocre ones.</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-card">
+                        <div class="strategy-number">5</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Ask Questions</div>
+                            <div class="strategy-why">Questions boost reply probability. Replies have HIGH weight in scoring.</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>End with a question</li>
+                                    <li>Make it easy to answer</li>
+                                    <li>Reply to replies</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Ask rhetorical only</li>
+                                    <li>Ignore responses</li>
+                                    <li>Ask too complex</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">"What do you think?" works surprisingly well.</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-card">
+                        <div class="strategy-number">6</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Build Real Followers</div>
+                            <div class="strategy-why">In-network content has ~30% advantage over out-of-network content.</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>Engage authentically</li>
+                                    <li>Provide consistent value</li>
+                                    <li>Build relationships</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Buy followers</li>
+                                    <li>Follow/unfollow spam</li>
+                                    <li>Ignore your audience</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">100 real followers > 10,000 fake ones for reach.</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-card">
+                        <div class="strategy-number">7</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Respect the 48h Window</div>
+                            <div class="strategy-why">Content expires from cache after 48 hours. Time your posts strategically.</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>Post when audience active</li>
+                                    <li>Create timely content</li>
+                                    <li>Leverage trends early</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Post late to trends</li>
+                                    <li>Ignore time zones</li>
+                                    <li>Miss peak hours</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">Most engagement happens in first 4 hours. Start strong.</div>
+                        </div>
+                    </div>
+
+                    <div class="strategy-card">
+                        <div class="strategy-number">8</div>
+                        <div class="strategy-header">
+                            <div class="strategy-title">Encourage Profile Clicks</div>
+                            <div class="strategy-why">Profile clicks show interest in you as an author. Builds authority.</div>
+                        </div>
+                        <div class="strategy-content">
+                            <div class="strategy-lists">
+                                <ul class="strategy-do">
+                                    <li>Have clear bio</li>
+                                    <li>Reference your work</li>
+                                    <li>Create curiosity</li>
+                                </ul>
+                                <ul class="strategy-dont">
+                                    <li>Have empty profile</li>
+                                    <li>Be completely anonymous</li>
+                                    <li>Ignore branding</li>
+                                </ul>
+                            </div>
+                            <div class="pro-tip">"More in my bio" drives profile visits.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="card-header">
+                    <div class="card-icon" style="border: 1px solid var(--accent-error);">
+                        <span style="color: var(--accent-error-light);">⚠️</span>
+                    </div>
+                    <div>
+                        <div class="card-title">Avoid Suppression</div>
+                        <div class="card-subtitle">5 things that will tank your reach</div>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-top: var(--space-4);">
+                    <div class="warning-card">
+                        <div class="warning-title">Block/Mute/Report Triggers</div>
+                        <div class="warning-text">Content that makes people block, mute, or report you receives severe algorithmic penalties. One instance can devastate reach for weeks.</div>
+                        <span class="tag penalty">Severe penalty</span>
+                    </div>
+
+                    <div class="warning-card">
+                        <div class="warning-title">"Not Interested" Content</div>
+                        <div class="warning-text">Clickbait, misleading headlines, or content that doesn't deliver on its promise triggers "Not Interested" which reduces reach.</div>
+                        <span class="tag penalty">Medium penalty</span>
+                    </div>
+
+                    <div class="warning-card" style="border-left-color: var(--accent-warning);">
+                        <div class="warning-title" style="color: var(--accent-warning-light);">Spam/Over-posting</div>
+                        <div class="warning-text">Author diversity penalty kicks in HARD after 2-3 posts per day. Post 5+ times and later posts get only 10% of normal reach.</div>
+                        <span class="tag penalty">Diminishing returns</span>
+                    </div>
+
+                    <div class="warning-card" style="border-left-color: var(--accent-warning);">
+                        <div class="warning-title" style="color: var(--accent-warning-light);">External Links</div>
+                        <div class="warning-text">The algorithm deprioritizes content that sends users off-platform. Native content always wins. Put links in replies if needed.</div>
+                        <span class="tag penalty">Reduced reach</span>
+                    </div>
+
+                    <div class="warning-card" style="border-left-color: var(--accent-warning); grid-column: 1 / -1;">
+                        <div class="warning-title" style="color: var(--accent-warning-light);">Muted Keywords</div>
+                        <div class="warning-text">Common topics like politics, crypto, and controversial terms are muted by many users. Your content becomes invisible to them.</div>
+                        <span class="tag penalty">Invisible to some</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             DEEP DIVE PANEL
+             ===================================================== -->
+        <div id="deep-dive" class="panel">
+            <div class="glass-panel">
+                <div class="card-header">
+                    <div class="card-icon" style="border: 1px solid var(--border-medium);">
+                        <span style="color: var(--text-secondary);">∑</span>
+                    </div>
+                    <div>
+                        <div class="card-title">The Scoring Formula</div>
+                        <div class="card-subtitle">How X calculates your content's rank</div>
+                    </div>
+                </div>
+
+                <div class="code-block" style="line-height: 2;">
+<span class="code-comment">// The algorithm predicts 19 engagement actions and combines them:</span><br><br>
+<span class="code-keyword">Final_Score</span> = Σ (<span style="color: var(--accent-warning-light);">weight</span> × <span class="code-positive">P(action)</span>)<br><br>
+
+<span class="code-comment">// Expanded formula:</span><br>
+<span class="code-keyword">weighted_score</span> =<br>
+&nbsp;&nbsp;+ <span class="code-positive">favorite_score</span> × FAVORITE_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">reply_score</span> × REPLY_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">repost_score</span> × REPOST_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">quote_score</span> × QUOTE_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">click_score</span> × CLICK_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">profile_click_score</span> × PROFILE_CLICK_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">vqv_score</span> × VQV_WEIGHT <span class="code-comment">// video boost</span><br>
+&nbsp;&nbsp;+ <span class="code-positive">share_score</span> × SHARE_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">share_via_dm_score</span> × SHARE_VIA_DM_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">share_via_copy_link_score</span> × SHARE_VIA_COPY_LINK_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">dwell_score</span> × DWELL_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">photo_expand_score</span> × PHOTO_EXPAND_WEIGHT<br>
+&nbsp;&nbsp;+ <span class="code-positive">follow_author_score</span> × FOLLOW_AUTHOR_WEIGHT<br>
+&nbsp;&nbsp;- <span class="code-negative">not_interested_score</span> × NOT_INTERESTED_WEIGHT<br>
+&nbsp;&nbsp;- <span class="code-negative">block_author_score</span> × BLOCK_AUTHOR_WEIGHT<br>
+&nbsp;&nbsp;- <span class="code-negative">mute_author_score</span> × MUTE_AUTHOR_WEIGHT<br>
+&nbsp;&nbsp;- <span class="code-negative">report_score</span> × REPORT_WEIGHT
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--accent-primary);">
+                            <span style="color: var(--accent-primary-light);">🔄</span>
+                        </div>
+                        <div>
+                            <div class="card-title">The Two-Stage Pipeline</div>
+                            <div class="card-subtitle">Retrieval → Ranking</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: var(--space-6);">
+                        <div style="font-weight: 600; color: var(--accent-primary-light); margin-bottom: var(--space-3);">Stage 1: Retrieval (Candidate Sourcing)</div>
+                        <ul style="font-size: 0.85rem; color: var(--text-secondary); padding-left: var(--space-6); line-height: 1.6;">
+                            <li><strong>Thunder:</strong> Pulls recent posts from accounts you follow (in-network)</li>
+                            <li><strong>Phoenix Retrieval:</strong> ML-based similarity search across ALL posts (out-of-network)</li>
+                            <li>Both sources combined into candidate pool</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: var(--space-3);">Stage 2: Ranking (Grok Transformer)</div>
+                        <ul style="font-size: 0.85rem; color: var(--text-secondary); padding-left: var(--space-6); line-height: 1.6;">
+                            <li>Takes your engagement history (128 recent actions)</li>
+                            <li>Scores each candidate independently (candidate isolation mask)</li>
+                            <li>Predicts probabilities for all 19 action types</li>
+                            <li>Applies weighted combination + diversity penalties</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--accent-success);">
+                            <span style="color: var(--accent-success-light);">📋</span>
+                        </div>
+                        <div>
+                            <div class="card-title">The Scoring Pipeline</div>
+                            <div class="card-subtitle">5 sequential scorers</div>
+                        </div>
+                    </div>
+
+                    <div class="pipeline">
+                        <div class="pipeline-step">
+                            <div class="pipeline-number" style="background: var(--accent-primary);">1</div>
+                            <div class="pipeline-content">
+                                <div class="pipeline-title">Phoenix Scorer</div>
+                                <div class="pipeline-desc">ML predictions (19 probabilities)</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="pipeline-number" style="background: var(--accent-primary-light);">2</div>
+                            <div class="pipeline-content">
+                                <div class="pipeline-title">Weighted Scorer</div>
+                                <div class="pipeline-desc">Combine into single score</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="pipeline-number" style="background: var(--accent-warning);">3</div>
+                            <div class="pipeline-content">
+                                <div class="pipeline-title">Author Diversity Scorer</div>
+                                <div class="pipeline-desc">Penalize repeated authors</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="pipeline-number" style="background: var(--accent-success);">4</div>
+                            <div class="pipeline-content">
+                                <div class="pipeline-title">OON Scorer</div>
+                                <div class="pipeline-desc">Penalize out-of-network content</div>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="pipeline-number" style="background: var(--accent-error);">5</div>
+                            <div class="pipeline-content">
+                                <div class="pipeline-title">Selection</div>
+                                <div class="pipeline-desc">Top K posts by final score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="card-header">
+                    <div class="card-icon" style="border: 1px solid var(--accent-warning);">
+                        <span style="color: var(--accent-warning-light);">📉</span>
+                    </div>
+                    <div>
+                        <div class="card-title">Author Diversity Penalty</div>
+                        <div class="card-subtitle">How posting frequency affects your scores</div>
+                    </div>
+                </div>
+
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: var(--space-6);">
+                    If you post multiple times per day, your later posts receive exponentially decaying score multipliers.
+                    This ensures feed diversity and prevents any single author from dominating.
+                </p>
+
+                <div class="decay-chart">
+                    <div class="decay-bar" style="height: 100%;" data-value="100%"></div>
+                    <div class="decay-bar" style="height: 45%;" data-value="45%"></div>
+                    <div class="decay-bar" style="height: 32%;" data-value="32%"></div>
+                    <div class="decay-bar" style="height: 20%;" data-value="20%"></div>
+                    <div class="decay-bar" style="height: 14%;" data-value="14%"></div>
+                    <div class="decay-bar" style="height: 10%;" data-value="10%"></div>
+                    <div class="decay-bar" style="height: 10%;" data-value="10%"></div>
+                    <div class="decay-bar" style="height: 10%;" data-value="10%"></div>
+                </div>
+                <div class="decay-labels">
+                    <span>Post 1</span>
+                    <span>Post 2</span>
+                    <span>Post 3</span>
+                    <span>Post 4</span>
+                    <span>Post 5</span>
+                    <span>Post 6</span>
+                    <span>Post 7</span>
+                    <span>Post 8+</span>
+                </div>
+
+                <div style="margin-top: var(--space-8); padding: var(--space-4); background: var(--bg-elevated); border-radius: 0;">
+                    <div style="font-family: var(--font-mono); font-weight: 600; margin-bottom: var(--space-3); color: var(--accent-warning-light);">Formula</div>
+                    <div class="code-block" style="margin-bottom: var(--space-4);">
+                        <code>multiplier = max(FLOOR, BASE_MULTIPLIER ^ (post_position - 1))</code>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                        Where <code style="color: var(--accent-primary-light);">BASE_MULTIPLIER ≈ 0.45</code> and <code style="color: var(--accent-primary-light);">FLOOR ≈ 0.10</code>
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--accent-primary);">
+                            <span style="color: var(--accent-primary-light);">⏰</span>
+                        </div>
+                        <div>
+                            <div class="card-title">48-Hour Content Window</div>
+                            <div class="card-subtitle">How content ages out</div>
+                        </div>
+                    </div>
+
+                    <div style="height: 8px; background: var(--bg-raised); border-radius: 0; overflow: hidden; margin: var(--space-4) 0;">
+                        <div style="height: 100%; width: 100%; background: var(--accent-primary);"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-tertiary);">
+                        <span>0h</span>
+                        <span>12h</span>
+                        <span>24h</span>
+                        <span>36h</span>
+                        <span>48h (purge)</span>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: var(--space-6);">
+                        Posts older than <strong>48 hours</strong> are automatically purged from the in-network cache.
+                        Your content has a 2-day lifespan to gain traction.
+                    </p>
+
+                    <div style="margin-top: var(--space-4);">
+                        <span class="tag info">Recency matters</span>
+                        <span class="tag info">2-day window</span>
+                        <span class="tag info">Cache purge at 48h</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel">
+                    <div class="card-header">
+                        <div class="card-icon" style="border: 1px solid var(--border-medium);">
+                            <span style="color: var(--text-secondary);">🌐</span>
+                        </div>
+                        <div>
+                            <div class="card-title">In-Network vs Out-of-Network</div>
+                            <div class="card-subtitle">Content source scoring</div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2" style="margin-top: var(--space-4);">
+                        <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0; text-align: center;">
+                            <div style="font-family: var(--font-mono); font-size: 1.75rem; font-weight: 700; color: var(--accent-success-light);">1.0x</div>
+                            <div style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;">In-Network</div>
+                            <p style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: var(--space-3);">Posts from accounts you follow</p>
+                        </div>
+                        <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0; text-align: center;">
+                            <div style="font-family: var(--font-mono); font-size: 1.75rem; font-weight: 700; color: var(--accent-error-light);">~0.7x</div>
+                            <div style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;">Out-of-Network</div>
+                            <p style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: var(--space-3);">Posts from Phoenix ML retrieval</p>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: var(--space-6);">
+                        Your followers see your content with a natural advantage. Building genuine followers
+                        is crucial for consistent reach.
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="card-header">
+                    <div class="card-icon" style="border: 1px solid var(--accent-primary);">
+                        <span style="color: var(--accent-primary-light);">🧠</span>
+                    </div>
+                    <div>
+                        <div class="card-title">Technical Architecture</div>
+                        <div class="card-subtitle">Key implementation details</div>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0;">
+                        <div style="font-weight: 600; margin-bottom: var(--space-3); color: var(--text-primary);">Candidate Isolation</div>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                            Each post is scored independently - can't "see" other candidates.
+                            Scores are consistent and cacheable.
+                        </p>
+                    </div>
+                    <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0;">
+                        <div style="font-weight: 600; margin-bottom: var(--space-3); color: var(--text-primary);">Hash-Based Embeddings</div>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                            User, post, and author embeddings use multiple hash functions
+                            for robustness and collision resistance.
+                        </p>
+                    </div>
+                    <div style="padding: var(--space-4); background: var(--bg-elevated); border-radius: 0;">
+                        <div style="font-weight: 600; margin-bottom: var(--space-3); color: var(--text-primary);">Grok Transformer</div>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">
+                            RoPE embeddings, RMS normalization, GeLU activation,
+                            grouped query attention, attention logits clipped at ±30.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Based on analysis of X's open-sourced algorithm (xAI's Grok-powered recommendation system)</p>
+            <p style="margin-top: var(--space-3);">Built for understanding and strategic content optimization</p>
+        </footer>
+    </div>
+
+    <script>
+        // =====================================================
+        // POST ANALYZER - JavaScript Implementation
+        // =====================================================
+
+        class PostAnalyzer {
+            constructor() {
+                this.patterns = {
+                    // Positive signals
+                    video: /\b(video|watch|clip|🎬|📹|▶️)\b/i,
+                    question: /\?/,
+                    thread: /\b(thread|🧵)\b/i,
+                    callToAction: /\b(check out|read more|learn more|discover|find out|see how)\b/i,
+                    engagement: /\b(what do you think|thoughts\??|agree\??|opinions?)\b/i,
+                    personal: /\b(I|my|me|we|our)\b/i,
+                    numbers: /\b\d+[%kKmMbB]?\b/,
+                    list: /^\s*[\d•\-\*]\s/m,
+
+                    // Negative signals
+                    clickbait: /\b(you won't believe|mind.?blown|game.?changer|this is huge|viral)\b/i,
+                    spammy: /\b(click here|subscribe|follow me|rt this|like this)\b/i,
+                    controversial: /\b(hot take|unpopular opinion|controversial|fight me)\b/i,
+                    externalLink: /https?:\/\/(?!twitter\.com|x\.com)\S+/gi,
+                    tooManyHashtags: /#\w+/g,
+                    tooManyMentions: /@\w+/g,
+                    allCaps: /\b[A-Z]{4,}\b/g
+                };
+
+                this.weights = {
+                    // Positive
+                    video: 15,
+                    question: 12,
+                    thread: 8,
+                    callToAction: 5,
+                    engagement: 10,
+                    personal: 3,
+                    numbers: 5,
+                    list: 4,
+                    optimalLength: 10,
+
+                    // Negative
+                    clickbait: -15,
+                    spammy: -20,
+                    controversial: -10,
+                    externalLink: -12,
+                    tooManyHashtags: -8,
+                    tooManyMentions: -5,
+                    allCaps: -8,
+                    tooShort: -10,
+                    tooLong: -5
+                };
+            }
+
+            analyze(text) {
+                if (!text || text.trim().length === 0) {
+                    return null;
+                }
+
+                const result = {
+                    score: 50, // Base score
+                    signals: [],
+                    warnings: [],
+                    recommendations: []
+                };
+
+                // Analyze text length
+                const length = text.length;
+                if (length < 50) {
+                    result.score += this.weights.tooShort;
+                    result.warnings.push({
+                        type: 'length',
+                        message: 'Post is very short. Longer posts often perform better.',
+                        severity: 'medium'
+                    });
+                } else if (length >= 100 && length <= 280) {
+                    result.score += this.weights.optimalLength;
+                    result.signals.push({
+                        type: 'positive',
+                        name: 'Optimal Length',
+                        description: 'Post length is in the sweet spot (100-280 chars)'
+                    });
+                } else if (length > 500) {
+                    result.score += this.weights.tooLong;
+                    result.warnings.push({
+                        type: 'length',
+                        message: 'Very long posts may have lower completion rates.',
+                        severity: 'low'
+                    });
+                }
+
+                // Check positive patterns
+                if (this.patterns.video.test(text)) {
+                    result.score += this.weights.video;
+                    result.signals.push({
+                        type: 'positive',
+                        name: 'Video Content',
+                        description: 'Mentions video - gets VQV_WEIGHT boost if native'
+                    });
+                }
+
+                if (this.patterns.question.test(text)) {
+                    result.score += this.weights.question;
+                    result.signals.push({
+                        type: 'positive',
+                        name: 'Question',
+                        description: 'Questions boost reply probability'
+                    });
+                }
+
+                if (this.patterns.thread.test(text)) {
+                    result.score += this.weights.thread;
+                    result.signals.push({
+                        type: 'positive',
+                        name: 'Thread Indicator',
+                        description: 'Threads can drive dwell time'
+                    });
+                }
+
+                if (this.patterns.engagement.test(text)) {
+                    result.score += this.weights.engagement;
+                    result.signals.push({
+                        type: 'positive',
+                        name: 'Engagement Prompt',
+                        description: 'Asks for audience input'
+                    });
+                }
+
+                if (this.patterns.numbers.test(text)) {
+                    result.score += this.weights.numbers;
+                    result.signals.push({
+                        type: 'neutral',
+                        name: 'Specific Numbers',
+                        description: 'Concrete data adds credibility'
+                    });
+                }
+
+                if (this.patterns.list.test(text)) {
+                    result.score += this.weights.list;
+                    result.signals.push({
+                        type: 'neutral',
+                        name: 'List Format',
+                        description: 'Lists improve scannability'
+                    });
+                }
+
+                // Check negative patterns
+                if (this.patterns.clickbait.test(text)) {
+                    result.score += this.weights.clickbait;
+                    result.warnings.push({
+                        type: 'content',
+                        message: 'Clickbait phrases detected. May trigger "Not Interested".',
+                        severity: 'high'
+                    });
+                    result.signals.push({
+                        type: 'negative',
+                        name: 'Clickbait Detected',
+                        description: 'Phrases like "you won\'t believe" hurt reach'
+                    });
+                }
+
+                if (this.patterns.spammy.test(text)) {
+                    result.score += this.weights.spammy;
+                    result.warnings.push({
+                        type: 'content',
+                        message: 'Spammy call-to-action detected. High block/mute risk.',
+                        severity: 'high'
+                    });
+                    result.signals.push({
+                        type: 'negative',
+                        name: 'Spammy CTA',
+                        description: '"Click here", "Follow me" signals spam'
+                    });
+                }
+
+                if (this.patterns.controversial.test(text)) {
+                    result.score += this.weights.controversial;
+                    result.warnings.push({
+                        type: 'content',
+                        message: 'Controversial framing detected. May increase block/mute risk.',
+                        severity: 'medium'
+                    });
+                    result.signals.push({
+                        type: 'negative',
+                        name: 'Controversy Signal',
+                        description: '"Hot take" framing increases negative reactions'
+                    });
+                }
+
+                const externalLinks = text.match(this.patterns.externalLink);
+                if (externalLinks && externalLinks.length > 0) {
+                    result.score += this.weights.externalLink;
+                    result.warnings.push({
+                        type: 'link',
+                        message: 'External link detected. Native content performs better.',
+                        severity: 'medium'
+                    });
+                    result.signals.push({
+                        type: 'negative',
+                        name: 'External Link',
+                        description: 'Off-platform links get deprioritized'
+                    });
+                    result.recommendations.push({
+                        type: 'tip',
+                        message: 'Consider putting the link in a reply instead of the main post.'
+                    });
+                }
+
+                const hashtags = text.match(this.patterns.tooManyHashtags) || [];
+                if (hashtags.length > 3) {
+                    result.score += this.weights.tooManyHashtags;
+                    result.warnings.push({
+                        type: 'hashtags',
+                        message: `${hashtags.length} hashtags detected. 1-3 is optimal.`,
+                        severity: 'medium'
+                    });
+                    result.signals.push({
+                        type: 'negative',
+                        name: 'Too Many Hashtags',
+                        description: 'Excessive hashtags look spammy'
+                    });
+                } else if (hashtags.length >= 1 && hashtags.length <= 3) {
+                    result.signals.push({
+                        type: 'neutral',
+                        name: 'Good Hashtag Count',
+                        description: `${hashtags.length} hashtag(s) - optimal range`
+                    });
+                }
+
+                const mentions = text.match(this.patterns.tooManyMentions) || [];
+                if (mentions.length > 3) {
+                    result.score += this.weights.tooManyMentions;
+                    result.warnings.push({
+                        type: 'mentions',
+                        message: `${mentions.length} mentions detected. May look like spam.`,
+                        severity: 'low'
+                    });
+                }
+
+                const allCaps = text.match(this.patterns.allCaps) || [];
+                if (allCaps.length > 2) {
+                    result.score += this.weights.allCaps;
+                    result.warnings.push({
+                        type: 'caps',
+                        message: 'Excessive ALL CAPS detected. May seem aggressive.',
+                        severity: 'low'
+                    });
+                }
+
+                // Generate recommendations
+                if (!this.patterns.question.test(text) && !this.patterns.engagement.test(text)) {
+                    result.recommendations.push({
+                        type: 'tip',
+                        message: 'Add a question to encourage replies. Questions have HIGH weight.'
+                    });
+                }
+
+                if (!this.patterns.video.test(text)) {
+                    result.recommendations.push({
+                        type: 'tip',
+                        message: 'Native video gets special VQV_WEIGHT boost. Consider video content.'
+                    });
+                }
+
+                if (result.warnings.length === 0) {
+                    result.recommendations.push({
+                        type: 'success',
+                        message: 'No major issues detected! Post looks algorithm-friendly.'
+                    });
+                }
+
+                // Clamp score between 0 and 100
+                result.score = Math.max(0, Math.min(100, result.score));
+
+                // Add grade
+                if (result.score >= 80) {
+                    result.grade = { label: 'Excellent', class: 'grade-excellent' };
+                } else if (result.score >= 60) {
+                    result.grade = { label: 'Good', class: 'grade-good' };
+                } else if (result.score >= 40) {
+                    result.grade = { label: 'Moderate', class: 'grade-moderate' };
+                } else {
+                    result.grade = { label: 'Needs Work', class: 'grade-poor' };
+                }
+
+                return result;
+            }
+        }
+
+        // =====================================================
+        // UI CONTROLLER
+        // =====================================================
+
+        const analyzer = new PostAnalyzer();
+
+        // Tab Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.panel).classList.add('active');
+            });
+        });
+
+        // Character Counter
+        const postText = document.getElementById('postText');
+        const charCounter = document.getElementById('charCounter');
+
+        postText.addEventListener('input', () => {
+            const length = postText.value.length;
+            charCounter.textContent = `${length} / ${length > 280 ? '4000' : '280'}`;
+
+            charCounter.classList.remove('warning', 'danger');
+            if (length > 280 && length <= 500) {
+                charCounter.classList.add('warning');
+            } else if (length > 500) {
+                charCounter.classList.add('danger');
+            }
+        });
+
+        // Analyze Button
+        document.getElementById('analyzeBtn').addEventListener('click', () => {
+            const text = postText.value;
+            const result = analyzer.analyze(text);
+
+            if (!result) {
+                document.getElementById('analysisResults').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-text">Please enter some text to analyze</div>
+                    </div>
+                `;
+                document.getElementById('detailedResults').style.display = 'none';
+                document.getElementById('scoreValue').textContent = '--';
+                document.getElementById('scoreGrade').style.display = 'none';
+                return;
+            }
+
+            // Update score display
+            document.getElementById('scoreValue').textContent = result.score;
+            const gradeEl = document.getElementById('scoreGrade');
+            gradeEl.textContent = result.grade.label;
+            gradeEl.className = `score-grade ${result.grade.class}`;
+            gradeEl.style.display = 'inline-block';
+
+            // Update analysis summary
+            document.getElementById('analysisResults').innerHTML = `
+                <div style="text-align: left;">
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: var(--space-3);">
+                        <strong>${result.signals.filter(s => s.type === 'positive').length}</strong> positive signals •
+                        <strong>${result.signals.filter(s => s.type === 'negative').length}</strong> negative signals •
+                        <strong>${result.warnings.length}</strong> warnings
+                    </div>
+                </div>
+            `;
+
+            // Show detailed results
+            document.getElementById('detailedResults').style.display = 'block';
+
+            // Render detected signals
+            const signalsContainer = document.getElementById('detectedSignals');
+            signalsContainer.innerHTML = result.signals.map(signal => `
+                <div class="detected-signal ${signal.type}">
+                    <span>${signal.type === 'positive' ? '✓' : signal.type === 'negative' ? '✕' : '•'}</span>
+                    <div>
+                        <div style="font-weight: 500;">${signal.name}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-tertiary);">${signal.description}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render warnings
+            const warningsPanel = document.getElementById('warningsPanel');
+            const warningsList = document.getElementById('warningsList');
+            if (result.warnings.length > 0) {
+                warningsPanel.style.display = 'block';
+                warningsList.innerHTML = result.warnings.map(warning => `
+                    <div class="warning-card" style="margin-bottom: var(--space-3);">
+                        <div class="warning-text">${warning.message}</div>
+                    </div>
+                `).join('');
+            } else {
+                warningsPanel.style.display = 'none';
+            }
+
+            // Render recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = result.recommendations.map(rec => `
+                <div class="recommendation">
+                    <div class="recommendation-icon ${rec.type}">
+                        ${rec.type === 'tip' ? '💡' : rec.type === 'warning' ? '⚠️' : '✓'}
+                    </div>
+                    <div class="recommendation-text">${rec.message}</div>
+                </div>
+            `).join('');
+        });
+
+        // Initialize with empty state
+        document.getElementById('scoreValue').textContent = '--';
+    </script>
+</body>
+</html>
